@@ -11,9 +11,11 @@ namespace EF6.Views.Generator.Core.CommandLine
         {
             _parameterNames = new[]
             {
-                "dllPath",
+                "dllFile",
                 "contextName",
-                "outputPath"
+                "outputPath",
+                "configFile",
+                "connectionStringName"
             };
         }
 
@@ -23,7 +25,14 @@ namespace EF6.Views.Generator.Core.CommandLine
 
             var argumentsSet = new HashSet<string>(arguments, StringComparer.InvariantCultureIgnoreCase);
 
-            foreach (var parameterName in _parameterNames)
+            var requiredParameters = new[]
+            {
+                _parameterNames[0],
+                _parameterNames[1],
+                _parameterNames[2]
+            };
+
+            foreach (var parameterName in requiredParameters)
             {
                 if (!argumentsSet.Contains(parameterName))
                     missingParameters.Add(parameterName);
@@ -32,8 +41,8 @@ namespace EF6.Views.Generator.Core.CommandLine
             if (missingParameters.Count != 0)
                 return $"Required parameters have not been specified: {string.Join(", ", missingParameters)}";
 
-            if (arguments.Length < _parameterNames.Count * 2)
-                return $"Some parameters do not have a value!";
+            if (arguments.Length < requiredParameters.Length * 2)
+                return $"Some required parameters do not have a value!";
 
             return string.Empty;
         }
@@ -46,24 +55,12 @@ namespace EF6.Views.Generator.Core.CommandLine
 
             while (i < arguments.Length)
             {
-                var argument = arguments[i];
-
-                if (argument.Equals(_parameterNames[0], StringComparison.InvariantCultureIgnoreCase))
-                {
-                    parameters[0] = arguments[++i];
-                }
-                else if (argument.Equals(_parameterNames[1], StringComparison.InvariantCultureIgnoreCase))
-                {
-                    parameters[1] = arguments[++i];
-                }
-                else if (argument.Equals(_parameterNames[2], StringComparison.InvariantCultureIgnoreCase))
-                {
-                    parameters[2] = arguments[++i];
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException($"Argument '{argument}' is not supported");
-                }
+                if (TrySetParameter(parameters, 0, arguments, i)) i++;
+                else if (TrySetParameter(parameters, 1, arguments, i)) i++;
+                else if (TrySetParameter(parameters, 2, arguments, i)) i++;
+                else if (TrySetParameter(parameters, 3, arguments, i)) i++;
+                else if (TrySetParameter(parameters, 4, arguments, i)) i++;
+                else throw new ArgumentOutOfRangeException($"Argument '{arguments[i]}' is not supported");
 
                 i++;
             }
@@ -71,7 +68,18 @@ namespace EF6.Views.Generator.Core.CommandLine
             return new Settings(
                 parameters[0],
                 parameters[1],
-                parameters[2]);
+                parameters[2],
+                parameters[3],
+                parameters[4]);
+        }
+
+        private bool TrySetParameter(string[] parameters, int parameterIndex, string[] arguments, int argumentIndex)
+        {
+            if (!arguments[argumentIndex].Equals(_parameterNames[parameterIndex], StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            parameters[parameterIndex] = arguments[++argumentIndex];
+            return true;
         }
     }
 }

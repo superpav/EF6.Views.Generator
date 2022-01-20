@@ -6,13 +6,13 @@ namespace EF6.Views.Generator.Core.DbContext
 {
     public class DbContextProvider
     {
-        public object GetDbContextInstance(Assembly assembly, string contextName)
+        public object GetDbContextInstance(Assembly assembly, string contextName, string connectionString)
         {
             var dbContextType = assembly.GetDbContextType(contextName);
 
-            var constructor = dbContextType.GetConstructor(new Type[0]);
-
-            return constructor.Invoke(new object[0]);
+            return connectionString == null
+                ? dbContextType.GetConstructor(new Type[0]).Invoke(new object[0])
+                : dbContextType.GetConstructor(new[] { typeof(string) }).Invoke(new[] { connectionString });
         }
     }
 }

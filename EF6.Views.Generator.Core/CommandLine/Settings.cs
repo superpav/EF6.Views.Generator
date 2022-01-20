@@ -2,17 +2,23 @@
 {
     public class Settings
     {
-        public string DllPath { get; }
+        public string DllFile { get; }
 
         public string ContextName { get; }
 
         public string OutputPath { get; }
 
-        public Settings(string dllPath, string contextName, string outputPath)
+        public string ConfigFile { get; set; }
+
+        public string ConnectionStringName { get; set; }
+
+        public Settings(string dllPath, string contextName, string outputPath, string configPath, string connectionStringName)
         {
-            DllPath = dllPath;
+            DllFile = dllPath;
             ContextName = contextName;
             OutputPath = outputPath;
+            ConfigFile = configPath;
+            ConnectionStringName = connectionStringName;
         }
     }
 }

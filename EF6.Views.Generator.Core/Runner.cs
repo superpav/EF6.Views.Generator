@@ -8,7 +8,7 @@ namespace EF6.Views.Generator.Core
 {
     public static class Runner
     {
-        public static void Run(string[] args)
+        public static void Run(string[] args, Func<Settings, string> getConnectionString)
         {
             var parser = new CommandLineParser();
             var dbContextProvider = new DbContextProvider();
@@ -24,9 +24,13 @@ namespace EF6.Views.Generator.Core
 
             var settings = parser.Parse(args);
 
-            var assembly = Assembly.LoadFrom(settings.DllPath);
+            var connectionString = settings.ConfigFile != null
+                ? getConnectionString(settings)
+                : null;
 
-            var dbContext = dbContextProvider.GetDbContextInstance(assembly, settings.ContextName);
+            var assembly = Assembly.LoadFrom(settings.DllFile);
+
+            var dbContext = dbContextProvider.GetDbContextInstance(assembly, settings.ContextName, connectionString);
 
             var viewsPath = generator.Generate(dbContext, settings.OutputPath);
 
