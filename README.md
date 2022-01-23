@@ -1,5 +1,7 @@
 # EF6.Views.Generator
 
+[![CI](https://github.com/superpav/EF6.Views.Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/superpav/EF6.Views.Generator/actions/workflows/ci.yml)
+
 Set of *.exe files to generate EF6 views. Inspired by this [Visual Studio extension](https://github.com/ErikEJ/EntityFramework6PowerTools).
 
 ## Prerequisites
