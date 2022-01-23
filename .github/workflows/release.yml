@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - '*.*.*'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Setup .NET6
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.x.x'
+
+    - name: Restore dependencies
+      run: nuget restore EF6.Views.Generator.sln
+
+    - name: Build (.net framework)
+      run: msbuild EF6.Views.Generator.sln /p:Configuration=Release
+      
+    - name: Upload a Build Artifact (.NET framework)
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: EF6.Views.Generator.NET472
+        path: EF6.Views.Generator.NET472\bin\Release
+        
+    - name: Upload a Build Artifact (.NET6)
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: EF6.Views.Generator.NET6
+        path: EF6.Views.Generator.NET6\bin\Release
