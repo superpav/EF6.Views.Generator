@@ -27,7 +27,7 @@ jobs:
     - name: Restore dependencies
       run: nuget restore EF6.Views.Generator.sln
 
-    - name: Build (.net framework)
+    - name: Build
       run: msbuild EF6.Views.Generator.sln /p:Configuration=Release
       
     - name: Upload a Build Artifact (.NET framework)
